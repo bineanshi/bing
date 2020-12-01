@@ -1,0 +1,57 @@
+{{ define "bing/index.tmpl" }}
+<html>
+    <head>
+        <title>Bing 每日壁纸</title>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+            }
+            body {
+                background-image: url({{ .image.GetUrl}});
+            }
+
+            div.box{
+                background: rgba(226,243,204 ,0.5);
+                padding: 20px 0;
+                height: 40px;
+                text-align: center;
+            }
+            div.box a{
+                display: inline-block;
+                width: 115px;
+                height: 20px;
+                background: #3998ea;
+                padding: 10px;
+                text-align: center;
+                border-radius: 5px;
+                color: white;
+                font-weight: bold;
+                text-decoration:none;
+            }
+
+            div.copyright {
+                bottom: 10px;
+                position: absolute;
+                right: 10px;
+            }
+
+            div.copyright a {
+                text-decoration:none;
+                color: white;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div class="box">
+            <a href="/{{ .previous_start_date}}">上一页</a>
+            <a href="/{{ .next_start_date}}">下一页</a>
+        </div>
+        <div class="copyright">
+            <a href="{{ .image.CopyrightLink}}">{{ .image.Copyright}}</a>
+        </div>
+
+    </body>
+</html>
+{{ end }}
