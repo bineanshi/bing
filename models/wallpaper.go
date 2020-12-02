@@ -3,8 +3,10 @@ package models
 import (
 	"bytes"
 	"encoding/json"
+	"gorm.io/gorm"
 	"io"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"os"
 	"regexp"
@@ -16,8 +18,11 @@ func init()  {
 	// Migrate the schema
 	DB.AutoMigrate(&Wallpaper{})
 }
-
+type Wallpapers struct {
+	Images []Wallpaper `json:images`
+}
 type Wallpaper struct{
+	gorm.Model
 	ID        int    `gorm:"primary_key"`
 	StartDate string  `json:startdate,gorm:"size:255;index:start_date,unique"`
 	FullStartDate string `json:fullstartdate`
@@ -31,9 +36,6 @@ type Wallpaper struct{
 	QiNiu bool
 }
 
-type Wallpapers struct {
-	Images []Wallpaper `json:images`
-}
 
 func (wallpaper Wallpaper)DownloadImage()(bool,int) {
 	var image Wallpaper
@@ -44,9 +46,10 @@ func (wallpaper Wallpaper)DownloadImage()(bool,int) {
 		body, _ := ioutil.ReadAll(resp.Body)
 		regName := regexp.MustCompile(`[^\(| |,|，]*`)
 		name := regName.FindString(wallpaper.Copyright)
-		out, _ := os.Create("./download/" + name + ".jpg")
+		out, _ := os.Create("./download_tmp/" + name + ".jpg")
 		io.Copy(out, bytes.NewReader(body))
-		DB.Create(&wallpaper)
+		result := DB.Create(&wallpaper)
+		log.Println(result)
 		return true,wallpaper.ID
 	} else {
 		return false, 0
@@ -57,7 +60,7 @@ func (wallpaper Wallpaper)DownloadImage()(bool,int) {
 func (wallpaper Wallpaper)UploadQiNiu()(bool)  {
 	regName := regexp.MustCompile(`[^\(| |,|，]*`)
 	name := regName.FindString(wallpaper.Copyright)
-	imagPath := "./download/" + name + ".jpg"
+	imagPath := "./download_tmp/" + name + ".jpg"
 	fileName := wallpaper.FullStartDate
 	ok, _ := QiNiuUpload(imagPath,fileName)
 	return ok

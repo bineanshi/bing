@@ -2,6 +2,7 @@ package lib
 
 import (
 	"context"
+	"fmt"
 	"github.com/qiniu/api.v7/v7/auth/qbox"
 	"github.com/qiniu/api.v7/v7/storage"
 )
@@ -38,6 +39,7 @@ func QiNiuUpload(filePath string, fileName string)(bool,error) {
 		},
 	}
 	err := formUploader.PutFile(context.Background(), &ret, upToken, fileName + ".jpg", filePath, &putExtra)
+	fmt.Println(ret.Bucket, ret.Key, ret.FSize, ret.Hash, ret.Name)
 	if err != nil {
 		//fmt.Println(err)
 		return true, err

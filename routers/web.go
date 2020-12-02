@@ -11,7 +11,9 @@ func InitRouter() *gin.Engine {
 
 	router.LoadHTMLGlob("templates/*/*.tmpl")
 	router.GET("/", List)
-	router.GET("/:date", List)
+	router.GET("/refresh", Refresh)
+	router.GET("/x/:date", List)
+
 
 	return router
 }
